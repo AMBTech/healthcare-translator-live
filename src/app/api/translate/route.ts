@@ -4,12 +4,40 @@ import OpenAI from 'openai'
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
-})
+});
+
+// Rate limiting setup
+const rateLimitMap = new Map();
+const RATE_LIMIT = {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    maxRequests: 100, // maximum requests per window
+};
 
 export async function POST(request: NextRequest) {
     try {
         // Rate limiting check (basic implementation)
-        const ip = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
+        const forwardedFor = request.headers.get('x-forwarded-for');
+        const realIP = request.headers.get('x-real-ip');
+        const ip = forwardedFor?.split(',')[0] || realIP || 'unknown';
+        const now = Date.now();
+        const windowStart = now - RATE_LIMIT.windowMs;
+
+        // Clean up old entries
+        for (const [key, timestamps] of rateLimitMap.entries()) {
+            rateLimitMap.set(key, timestamps.filter((time: number) => time > windowStart));
+        }
+
+        // Check rate limit
+        const requestTimestamps = rateLimitMap.get(ip) || [];
+        if (requestTimestamps.length >= RATE_LIMIT.maxRequests) {
+            return NextResponse.json(
+                { error: 'Too many requests. Please try again later.' },
+                { status: 429 }
+            );
+        }
+
+        requestTimestamps.push(now);
+        rateLimitMap.set(ip, requestTimestamps);
 
         const { text, sourceLanguage, targetLanguage } = await request.json()
 

@@ -147,7 +147,7 @@ export default function TranscriptDisplay({
                 </div>
 
                 {/* Switch Button */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-1">
                     <button
                         onClick={onSwitchLanguages}
                         className="p-2 bg-blue-500 hover:bg-blue-600 rounded-full shadow-md transition-colors"
