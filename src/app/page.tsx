@@ -10,6 +10,12 @@ import { maskSensitiveData } from '@/utils/maskSensitiveData'
 import PrivacyDisclaimer from './components/PrivacyDisclaimer'
 import { ArrowLeftRight } from 'lucide-react'
 
+declare global {
+  interface Window {
+    __speakingTimeout?: number
+  }
+}
+
 // Debounce function to limit API calls
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState<T>(value)
@@ -134,7 +140,7 @@ export default function Translator() {
       // Apply masking AFTER translation
       const maskedTranslation = maskSensitiveData(data.translation)
       setTranslatedTranscript(maskedTranslation)
-    } catch (error: any) {
+    } catch (error: unknown | any) {
       // Don't show errors for aborted requests
       if (error.name === 'AbortError') {
         console.log('Translation request aborted')
@@ -174,10 +180,16 @@ export default function Translator() {
 
     // Set speaking state based on whether transcript is changing rapidly
     isSpeakingRef.current = true
-    clearTimeout(isSpeakingRef.current as any)
-    isSpeakingRef.current = setTimeout(() => {
-      isSpeakingRef.current = false
-    }, 2000) as any
+    // clearTimeout(isSpeakingRef.current as any)
+    // isSpeakingRef.current = setTimeout(() => {
+    //   isSpeakingRef.current = false
+    // }, 2000) as any
+    if (typeof window !== 'undefined') {
+      window.clearTimeout(window.__speakingTimeout)
+      window.__speakingTimeout = window.setTimeout(() => {
+        isSpeakingRef.current = false;
+      }, 2000)
+    }
   }, [])
 
   const handleSourceLanguageChange = (newLanguage: string) => {

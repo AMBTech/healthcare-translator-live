@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { Mic, MicOff, Square, RotateCw, VolumeX } from 'lucide-react'
+import { Mic, Square, RotateCw } from 'lucide-react'
 
 interface SpeechRecognitionEvent extends Event {
     resultIndex: number
@@ -269,7 +269,7 @@ export default function Recorder({ onTranscriptChange, language = 'en-US' }: Rec
                     <li>Use a quiet environment</li>
                     <li>Keep the microphone close to your mouth</li>
                     <li>Allow microphone permissions in your browser</li>
-                    <li>If errors occur, click "Reset" to restart recognition</li>
+                    <li>If errors occur, click 'Reset' to restart recognition</li>
                 </ul>
             </div>
         </div>

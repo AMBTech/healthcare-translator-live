@@ -10,7 +10,7 @@ export function useSessionManagement() {
     }, []);
 
     // Save data temporarily (only for current session)
-    const saveTemporaryData = useCallback((key: string, data: any) => {
+    const saveTemporaryData = useCallback((key: string, data: unknown) => {
         sessionStorage.setItem(key, JSON.stringify(data));
     }, []);
 
@@ -26,7 +26,9 @@ export function useSessionManagement() {
 
     // Clear specific temporary data
     const clearTemporaryData = useCallback((key: string) => {
-        sessionStorage.removeItem(key);
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem(key);
+        }
     }, []);
 
     // Clear all data on page unload
