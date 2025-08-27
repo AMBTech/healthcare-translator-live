@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-export async function GET(req: NextResponse) {
-    const { searchParams } = new URL(req.url);
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
     const text = searchParams.get('text');
     const lang = searchParams.get('lang') || 'en-US';
 
